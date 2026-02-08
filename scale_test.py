@@ -6,13 +6,17 @@
 """Run scale tests against provisioned nodes.
 
 Usage:
-    uv run scale_test.py                    # run all tests
-    uv run scale_test.py --test setup       # run one test
+    uv run scale_test.py --setup              # create Ansible venv
+    uv run scale_test.py                      # run all tests
+    uv run scale_test.py --test gather_facts  # run one test
     uv run scale_test.py --json results.json
 
 Expects nodes to be provisioned via provision.py first.
-Runs each test with both Ansible (via ansible-playbook) and FTL2,
-measuring wall-clock time.
+Runs each test with both Ansible (via ansible-playbook in .venv-ansible/)
+and FTL2, measuring wall-clock time.
+
+FTL2 modifies the ansible package at import time, so Ansible must run
+in a separate virtual environment.
 
 Environment variables:
     LINODE_TOKEN      - Linode API token (for API tests)
@@ -30,6 +34,33 @@ from ftl2 import automation
 
 
 SERVER_PREFIX = "ftl2-scale"
+ANSIBLE_VENV = Path(".venv-ansible")
+
+
+def get_ansible_playbook() -> str:
+    """Return path to ansible-playbook in the Ansible venv."""
+    path = ANSIBLE_VENV / "bin" / "ansible-playbook"
+    if not path.exists():
+        print(f"Ansible venv not found at {ANSIBLE_VENV}")
+        print("Run: uv run scale_test.py --setup")
+        sys.exit(1)
+    return str(path)
+
+
+def setup_ansible_venv():
+    """Create a separate venv with Ansible installed."""
+    if not ANSIBLE_VENV.exists():
+        print(f"Creating Ansible venv at {ANSIBLE_VENV}...")
+        subprocess.run(["uv", "venv", str(ANSIBLE_VENV)], check=True)
+    else:
+        print(f"Ansible venv exists at {ANSIBLE_VENV}")
+
+    print("Installing Ansible...")
+    subprocess.run(
+        ["uv", "pip", "install", "--python", str(ANSIBLE_VENV / "bin" / "python"), "ansible"],
+        check=True,
+    )
+    print("Ansible venv ready")
 
 
 async def count_hosts() -> int:
@@ -130,12 +161,13 @@ TESTS = {
 # --- Runner ---
 
 def run_ansible(playbook: str, inventory: str = "ansible-inventory") -> tuple[bool, float]:
-    """Run an Ansible playbook, return (success, seconds)."""
+    """Run an Ansible playbook using the separate Ansible venv."""
     if not Path(playbook).exists():
         return False, 0.0
+    ansible_playbook = get_ansible_playbook()
     start = time.perf_counter()
     result = subprocess.run(
-        ["ansible-playbook", playbook, "-i", inventory],
+        [ansible_playbook, playbook, "-i", inventory],
         capture_output=True,
         text=True,
     )
@@ -160,16 +192,21 @@ async def run_ftl2(func) -> tuple[bool, float]:
 
 async def main():
     parser = argparse.ArgumentParser(description="FTL2 scale tests")
+    parser.add_argument("--setup", action="store_true", help="Create Ansible venv")
     parser.add_argument("--test", type=str, help="Run a specific test")
     parser.add_argument("--json", type=str, metavar="FILE", help="Write results to JSON")
     parser.add_argument("--ftl2-only", action="store_true", help="Skip Ansible tests")
     parser.add_argument("--ansible-only", action="store_true", help="Skip FTL2 tests")
     args = parser.parse_args()
 
+    if args.setup:
+        setup_ansible_venv()
+        return
+
     # Check we have hosts
     host_count = await count_hosts()
     if host_count == 0:
-        print("No hosts provisioned. Run: python provision.py <count>")
+        print("No hosts provisioned. Run: uv run provision.py <count>")
         sys.exit(1)
 
     tests_to_run = {args.test: TESTS[args.test]} if args.test else TESTS
