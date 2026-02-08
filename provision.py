@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # /// script
-# dependencies = ["ftl2 @ git+https://github.com/benthomasson/ftl2"]
+# dependencies = [
+#     "ftl2 @ git+https://github.com/benthomasson/ftl2",
+#     "linode_api4",
+# ]
 # requires-python = ">=3.13"
 # ///
 """Provision N small Linodes for scale testing.
