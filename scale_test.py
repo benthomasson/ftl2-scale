@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = ["ftl2 @ git+https://github.com/benthomasson/ftl2"]
+# requires-python = ">=3.13"
+# ///
 """Run scale tests against provisioned nodes.
 
 Usage:
-    python scale_test.py                    # run all tests
-    python scale_test.py --test setup       # run one test
-    python scale_test.py --json results.json
+    uv run scale_test.py                    # run all tests
+    uv run scale_test.py --test setup       # run one test
+    uv run scale_test.py --json results.json
 
 Expects nodes to be provisioned via provision.py first.
 Runs each test with both Ansible (via ansible-playbook) and FTL2,

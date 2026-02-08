@@ -20,11 +20,13 @@ playbooks/            # Ansible playbooks (one per test)
 ```bash
 export LINODE_TOKEN="..." LINODE_ROOT_PASS="..."
 
-python provision.py 5         # create 5 nodes
-python scale_test.py          # run all tests
-python scale_test.py --json results.json
-python teardown.py            # destroy all nodes
+uv run provision.py 5         # create 5 nodes
+uv run scale_test.py          # run all tests
+uv run scale_test.py --json results.json
+uv run teardown.py            # destroy all nodes
 ```
+
+Scripts use PEP 723 inline metadata so `uv run` installs ftl2 from GitHub automatically. No venv setup needed.
 
 ## Important
 

@@ -7,31 +7,30 @@ Provisions N small Linodes (Nanodes, $5/mo each), runs identical workloads throu
 ## Setup
 
 ```bash
-# Install ftl2
-uvx --from "git+https://github.com/benthomasson/ftl2" ftl2
-
 # Set credentials
 export LINODE_TOKEN="your-token"
 export LINODE_ROOT_PASS="your-password"
 ```
 
+No manual install needed. Scripts use [PEP 723 inline metadata](https://peps.python.org/pep-0723/) so `uv run` installs ftl2 automatically.
+
 ## Usage
 
 ```bash
 # Provision 5 nodes
-python provision.py 5
+uv run provision.py 5
 
 # Run scale tests
-python scale_test.py
+uv run scale_test.py
 
 # Run a specific test
-python scale_test.py --test file_operations
+uv run scale_test.py --test file_operations
 
 # Save results
-python scale_test.py --json results.json
+uv run scale_test.py --json results.json
 
 # Tear down all nodes when done
-python teardown.py
+uv run teardown.py
 ```
 
 ## Tests
@@ -45,4 +44,4 @@ python teardown.py
 
 ## Cost
 
-Nanodes are $0.0075/hr each. A 10-node test running for 1 hour costs $0.075. Always run `python teardown.py` when done.
+Nanodes are $0.0075/hr each. A 10-node test running for 1 hour costs $0.075. Always run `uv run teardown.py` when done.

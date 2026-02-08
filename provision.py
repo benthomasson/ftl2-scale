@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = ["ftl2 @ git+https://github.com/benthomasson/ftl2"]
+# requires-python = ">=3.13"
+# ///
 """Provision N small Linodes for scale testing.
 
 Usage:
-    python provision.py 5           # spin up 5 nodes
-    python provision.py 10          # spin up 10 nodes
-    python provision.py --check 5   # dry run
+    uv run provision.py 5           # spin up 5 nodes
+    uv run provision.py 10          # spin up 10 nodes
+    uv run provision.py --check 5   # dry run
 
 Nodes are tracked in .ftl2-state.json. Re-running is safe — existing
 nodes are reused. Use teardown.py to destroy them.

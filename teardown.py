@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = ["ftl2 @ git+https://github.com/benthomasson/ftl2"]
+# requires-python = ">=3.13"
+# ///
 """Destroy all scale test nodes.
 
 Usage:
-    python teardown.py          # destroy all nodes
-    python teardown.py --check  # dry run
+    uv run teardown.py          # destroy all nodes
+    uv run teardown.py --check  # dry run
 
 Reads .ftl2-state.json and destroys all ftl2-scale-* resources.
 
