@@ -1,0 +1,18 @@
+---
+- name: Install and remove package on all hosts
+  hosts: scale
+  gather_facts: false
+  tasks:
+    - name: Bootstrap python3-dnf
+      ansible.builtin.command:
+        cmd: dnf install -y python3-dnf
+
+    - name: Install tree
+      ansible.builtin.dnf:
+        name: tree
+        state: present
+
+    - name: Remove tree
+      ansible.builtin.dnf:
+        name: tree
+        state: absent

@@ -1,0 +1,20 @@
+---
+- name: Copy config files to all hosts
+  hosts: scale
+  gather_facts: false
+  tasks:
+    - name: Copy config files
+      ansible.builtin.copy:
+        dest: "/tmp/ftl2_scale_config_{{ item }}.conf"
+        content: |
+          # Config {{ item }}
+          workers = {{ item * 2 }}
+          port = {{ 8080 + item }}
+        mode: "0644"
+      loop: "{{ range(3) | list }}"
+
+    - name: Clean up config files
+      ansible.builtin.file:
+        path: "/tmp/ftl2_scale_config_{{ item }}.conf"
+        state: absent
+      loop: "{{ range(3) | list }}"

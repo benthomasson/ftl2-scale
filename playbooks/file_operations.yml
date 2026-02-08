@@ -1,0 +1,21 @@
+---
+- name: File operations on all hosts
+  hosts: scale
+  gather_facts: false
+  tasks:
+    - name: Create temp files
+      ansible.builtin.file:
+        path: "/tmp/ftl2_scale_{{ item }}"
+        state: touch
+      loop: "{{ range(5) | list }}"
+
+    - name: Stat temp files
+      ansible.builtin.stat:
+        path: "/tmp/ftl2_scale_{{ item }}"
+      loop: "{{ range(5) | list }}"
+
+    - name: Remove temp files
+      ansible.builtin.file:
+        path: "/tmp/ftl2_scale_{{ item }}"
+        state: absent
+      loop: "{{ range(5) | list }}"

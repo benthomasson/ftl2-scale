@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.ftl2-state.json
+.ftl2-deps.txt
+.ftl2-modules.txt
+*.pyz
+audit.json
+results*.json
+.env

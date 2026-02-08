@@ -1,0 +1,5 @@
+---
+- name: Gather facts from all hosts
+  hosts: scale
+  gather_facts: true
+  tasks: []
