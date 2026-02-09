@@ -104,9 +104,13 @@ async def main(count: int, check_mode: bool = False):
             await ftl.scale.wait_for_ssh(timeout=240)
             print("  All nodes reachable")
 
-        # Install psutil on all nodes (needed for ftl2-htop monitoring)
+        # Install python3-dnf (required by dnf module) and psutil (for ftl2-htop)
         if not check_mode:
-            print("\nInstalling python3-psutil on all nodes...")
+            print("\nInstalling python3-dnf on all nodes...")
+            await ftl.scale.command(cmd="dnf install -y python3-dnf")
+            print("  python3-dnf installed")
+
+            print("Installing python3-psutil on all nodes...")
             await ftl.scale.dnf(name="python3-psutil", state="present")
             print("  python3-psutil installed")
 
