@@ -101,8 +101,14 @@ async def main(count: int, check_mode: bool = False):
         # Wait for SSH on new nodes
         if created > 0 and not check_mode:
             print(f"\nWaiting for SSH on {created} new node(s)...")
-            await ftl.scale.wait_for_ssh(timeout=120)
+            await ftl.scale.wait_for_ssh(timeout=240)
             print("  All nodes reachable")
+
+        # Install psutil on all nodes (needed for ftl2-htop monitoring)
+        if not check_mode:
+            print("\nInstalling python3-psutil on all nodes...")
+            await ftl.scale.dnf(name="python3-psutil", state="present")
+            print("  python3-psutil installed")
 
         # Summary
         total = sum(1 for _ in ftl.state.resources() if _.startswith(SERVER_PREFIX))
