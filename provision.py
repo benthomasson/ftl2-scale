@@ -115,10 +115,11 @@ async def main(count: int, check_mode: bool = False):
             print("  python3-psutil installed")
 
             print("Setting hostnames on all nodes...")
-            for name in sorted(ftl.state.resources()):
-                if name.startswith(SERVER_PREFIX):
-                    proxy = getattr(ftl, name.replace("-", "_"))
-                    await proxy.hostname(name=name)
+            await asyncio.gather(*(
+                getattr(ftl, name.replace("-", "_")).hostname(name=name)
+                for name in sorted(ftl.state.resources())
+                if name.startswith(SERVER_PREFIX)
+            ))
             print("  hostnames set")
 
         # Summary
