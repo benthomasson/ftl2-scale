@@ -114,6 +114,13 @@ async def main(count: int, check_mode: bool = False):
             await ftl.scale.dnf(name="python3-psutil", state="present")
             print("  python3-psutil installed")
 
+            print("Setting hostnames on all nodes...")
+            for name in sorted(ftl.state.resources()):
+                if name.startswith(SERVER_PREFIX):
+                    proxy = getattr(ftl, name.replace("-", "_"))
+                    await proxy.hostname(name=name)
+            print("  hostnames set")
+
         # Summary
         total = sum(1 for _ in ftl.state.resources() if _.startswith(SERVER_PREFIX))
         print(f"\n{total} node(s) ready")
