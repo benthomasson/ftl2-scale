@@ -116,7 +116,7 @@ async def main(count: int, check_mode: bool = False):
 
             print("Setting hostnames on all nodes...")
             await asyncio.gather(*(
-                getattr(ftl, name.replace("-", "_")).hostname(name=name)
+                ftl[name].hostname(name=name)
                 for name in sorted(ftl.hosts.keys())
                 if name.startswith(SERVER_PREFIX)
             ))
